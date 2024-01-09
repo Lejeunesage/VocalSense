@@ -3,11 +3,14 @@ import {
     createWebHistory
 } from 'vue-router'
 import Config from "@/components/ConfigComponent.vue"
-import Home from "@/components/Home.vue"
+import Home from "@/components/HomeComponent.vue"
+
+
+// console.log("import.meta.url")
+// console.log(import.meta.env.BASE_URL)
 
 const router = createRouter({
-    history: createWebHistory(
-        import.meta.env.BASE_URL),
+    history: createWebHistory(),
     routes: [
         {
             path: '/:catchAll(.*)',
@@ -42,6 +45,7 @@ const router = createRouter({
         name: 'fade',
         mode: 'out-in',
     },
+    strict: true
 })
 
 router.beforeEach((to, from, next) => {

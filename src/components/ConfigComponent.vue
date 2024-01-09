@@ -1,93 +1,234 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import axios from 'axios';
-// import {  defineProps } from "vue";
 
-// let props = defineProps({
-//     keywords: {
-//         type: Array,
-//         default: () => ({}),
-//     }
+onMounted(() => {
+    getCampagneList(),
+        getActivityList()
+})
 
-// })
+// Variable permettant d'afficher le modal de creation de campagne
+let showAddCampaignModal = ref(false);
 
-// addKeyword() {
-//     if(this.keywords.trim())
-// }
+// Variable permettant d'afficher le modal de modification d'une campagne
+let showModifCampaignModal = ref(false);
 
 
-// const submitKeywords = () => {
-//     console.log('Keywords:', props.keywords);
-// }
-
-// let props = defineProps({
-//     keywords: Array,
-//     campagnes: Array,
-
-// })
-let campagnes = [];
-let ajoutCampagne = ref(false);
-
-// let activité = ref("");
-
-function createCampagne() {
-    this.ajoutCampagne = true;
+// Fonction permattant d'afficher le modal de création de campagne
+function showCreateCampagneModal() {
+    showAddCampaignModal.value = true;
 }
 
-function closeModal() {
-    this.ajoutCampagne = !this.ajoutCampagne
+// Fonction permattant d'afficher le modal de modification d'une campagne
+function showModifCampagneModal() {
+    showModifCampaignModal.value = true;
 }
+
+
+// Fonction permattant de fermer le modal de création de campagne
+function closeCreateCampagneModal() {
+    showAddCampaignModal.value = !showAddCampaignModal.value
+}
+
+// Fonction permattant de fermer le modal de modification d'une campagne
+function closeModifCampagneModal() {
+    showModifCampaignModal.value = !showModifCampaignModal.value
+}
+
 
 let nom_campagne = ref('');
-function creerCampagne() {
-    console.log(nom_campagne.value);
+const response = ref(null)
+let campagnes = ref([]);
 
-    axios.post('http://127.0.0.1:8000/api/store-campaign', {
-        nom_campagne: nom_campagne.value
-    }, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': 'http://localhost:8080',  // L'origine de votre frontend
-            // Vous pouvez également inclure d'autres en-têtes si nécessaire
-        }
-    })
-    .then(response => {
-        // Gérer la réponse du serveur ici
-        console.log(response.data);
-    })
-    .catch(error => {
-        // Gérer les erreurs ici
-        console.error(error);
-    });
+// Fonction permettant de recupérer toutes les campagnes disponibles
+const getCampagneList = async () => {
+    try {
+        response.value = await axios.get('http://localhost:8000/api/campaigns-list')
+
+        console.log(response.value);
+        campagnes.value = response.value.data;
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-
-
-function updateCampagne() {
-
-    let newCampagne = {
-    id: "1",
-    nom_campagne: "BOULANGE"
+// Fonction permettant de creer une nouvelle campagne
+const creerCampagne = async () => {
+    const body = {
+        nom_campagne: nom_campagne.value
     }
 
-    axios.put('http://127.0.0.1:8000/api/update-campaign', newCampagne, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': 'http://localhost:8080',  // Origine de votre frontend
-            // Vous pouvez inclure d'autres en-têtes si nécessaire
-        }
-    })
-    .then(response => {
-        // Gérer la réponse du serveur ici
-        console.log(response.data);
-    })
-    .catch(error => {
-        // Gérer les erreurs ici
-        console.error(error);
-    });
+    try {
+        response.value = await axios.post('http://localhost:8000/api/store-campaign', body)
+
+        console.log(response.value);
+        campagnes.value = response.value.data.campaign_list
+        showAddCampaignModal.value = false
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Variables récupérant le nom de la campagne
+let campagneDonnes = ref('')
+// Variables récupérant l'id de la campagne sélectionné
+let campagneSelectId = ref(0)
+// Fonction permettant de récupérere les informations de la campagne a modifié
+const getCampagneById = async (id) => {
+    try {
+        campagneSelectId = id
+        response.value = await axios.get(`http://localhost:8000/api/${id}/get-campaign`)
+        console.log(response.value);
+        campagneDonnes.value = response.value.data.nom_campagne;
+        console.log(campagneDonnes.value);
+        console.log(campagneSelectId);
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 
+// Fonction permettant de mettre a jour une campagne
+const updateCampagne = async () => {
+    const body = {
+        id: campagneSelectId,
+        nom_campagne: campagneDonnes.value
+    }
+
+    try {
+        response.value = await axios.put('http://localhost:8000/api/update-campaign', body)
+        console.log(response.value);
+        campagnes.value = response.value.data.campaign_list
+        showModifCampaignModal.value = false;
+        campagneSelectId = 0
+        campagneDonnes.value = ''
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Fonction permettand de supprimer une campagne
+const deleteCampagne = async (id) => {
+    try {
+
+        response.value = await axios.delete(`http://localhost:8000/api/${id}/delete-campaign`)
+        console.log(response);
+        campagnes.value = response.value.data.campaign_list
+        // campagneDonnes.value = response.value.data.nom_campagne;
+        // console.log(campagneDonnes.value);
+        // console.log(campagneSelectId);
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
+//   Activité
+let nom_activite = ref('')
+let activites = ref([]);
+let campagneActivitySelect = ref(0);
+
+// Variable permettant d'afficher le modal de création d'une activitée
+let showAddActivityModal = ref(false);
+
+// Fonction permattant d'afficher le modal de création d'une activitée
+function showCreateActivityModal() {
+    showAddActivityModal.value = true;
+}
+
+// Fonction permattant de fermer le modal de création d'une activitée
+function closeCreateActivityModal() {
+    showAddActivityModal.value = !showAddActivityModal.value
+}
+
+// Fonction permettant de recupérer toutes les campagnes disponibles
+const getActivityList = async () => {
+    try {
+        response.value = await axios.get('http://localhost:8000/api/activities-list')
+
+        console.log(response.value);
+        activites.value = response.value.data;
+        console.log(activites.value);
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Fonction permettant de creer une nouvelle activité
+const creerActivite = async () => {
+    const body = {
+        nom_activite: nom_activite.value,
+        campaign_id:campagneActivitySelect.value
+    }
+
+    try {
+        response.value = await axios.post('http://localhost:8000/api/store-activity', body)
+
+        console.log(response.value);
+        activites.value = response.value.data.activity_list
+        showAddActivityModal.value = false
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Variables récupérant le nom de l'activité sélectionné
+let activityDonnes = ref('')
+// Variables récupérant l'id de l'activité sélectionné
+let activitySelectId = ref(0)
+
+// Variable permettant d'afficher le modal de mise a jour d'une activitée
+let showModifActivityModal = ref(false);
+
+// Fonction permattant d'afficher le modal de mise a jour d'une activitée
+function showUpdateActivityModal() {
+    showModifActivityModal.value = true;
+}
+
+// Fonction permattant de fermer le modal de mise a jour d'une activitée
+function closeUpdateActivityModal() {
+    showModifActivityModal.value = !showAddActivityModal.value
+}
+
+// Fonction permettant de récupérere les informations de l'activité a modifié
+const getActivityById = async (id) => {
+    try {
+        activitySelectId = id
+        response.value = await axios.get(`http://localhost:8000/api/${id}/get-activity`) 
+        console.log(response.value);
+        activityDonnes.value = response.value.data.nom_activite;
+        console.log(activityDonnes.value);
+        console.log(activitySelectId);
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Fonction permettant de mettre a jour une activité
+const updateActivity = async () => {
+    const body = {
+        id: activitySelectId,
+        nom_activite: activityDonnes.value
+    }
+
+    try {
+        response.value = await axios.put('http://localhost:8000/api/update-activity', body)
+        console.log(response.value);
+        campagnes.value = response.value.data.activity_list
+        showModifActivityModal.value = false;
+        activitySelectId = 0
+        activityDonnes.value = ''
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 </script>
 
@@ -95,8 +236,7 @@ function updateCampagne() {
     <h1 class="text-center text-2xl font-semibold">Configuration</h1>
     <div class="grid grid-cols-3 gap-10">
         <div class="bg-gray relative  bg-opacity-25 h-96 overflow-y-auto rounded-xl flex-row">
-            <button type="button" @click="createCampagne()"
-                class=" fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
+            <button type="button" @click="showCreateCampagneModal()" class=" fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
                 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
                 Créer une campagne
             </button>
@@ -115,14 +255,20 @@ function updateCampagne() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="camp in campagnes" :key="camp"
+                        <tr v-for="camp in campagnes" :key="camp.id"
                             class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ camp }}
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
+                                {{ camp.nom_campagne }}
                             </th>
 
                             <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" @click="updateCampagne()">Edit</a>
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                    @click="getCampagneById(camp.id), showModifCampagneModal()">Editer</a>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <a href="#" class="font-medium text-red dark:text-red hover:underline"
+                                    @click="deleteCampagne(camp.id)">Supprimer</a>
                             </td>
                         </tr>
 
@@ -132,9 +278,8 @@ function updateCampagne() {
 
         </div>
         <div class="bg-gray relative  bg-opacity-25 h-96 overflow-y-auto rounded-xl flex-row">
-            <button type="button"
-                class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
-                font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
+            <button type="button" class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
+                font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10" @click="showCreateActivityModal()">
                 Créer une activité
             </button>
             <div class="flex flex-col px-2 mt-14">
@@ -154,63 +299,19 @@ function updateCampagne() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
+                            <tr v-for="activity in activites" :key="activity.id"
                                 class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    Apple MacBook Pro 17"
+                                    class="px-6 py-4 font-medium text-primary whitespace-nowrap dark:text-primary">
+                                    {{ activity.nom_activite }}
                                 </th>
 
                                 <td class="px-6 py-4">
                                     <a href="#"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                        class="font-medium text-primary dark:text-primary hover:underline" @click="getActivityById(activity.id), showUpdateActivityModal()">Editer</a>
                                 </td>
-                            </tr>
-                            <tr
-                                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    Microsoft Surface Pro
-                                </th>
-
                                 <td class="px-6 py-4">
-                                    <a href="#"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                            <tr
-                                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    Magic Mouse 2
-                                </th>
-
-                                <td class="px-6 py-4">
-                                    <a href="#"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                            <tr
-                                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    Google Pixel Phone
-                                </th>
-
-                                <td class="px-6 py-4">
-                                    <a href="#"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    Apple Watch 5
-                                </th>
-
-                                <td class="px-6 py-4">
-                                    <a href="#"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    <a href="#" class="font-medium text-red dark:text-red hover:underline">Supprimer</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -222,8 +323,7 @@ function updateCampagne() {
 
         </div>
         <div class="bg-gray relative  bg-opacity-25  overflow-y-auto rounded-xl flex-row">
-            <button type="button"
-                class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
+            <button type="button" class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
                 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
                 Créer mots clé
             </button>
@@ -247,7 +347,7 @@ function updateCampagne() {
                             <tr
                                 class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
                                     Apple MacBook Pro 17"
                                 </th>
 
@@ -259,7 +359,7 @@ function updateCampagne() {
                             <tr
                                 class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
                                     Microsoft Surface Pro
                                 </th>
 
@@ -271,7 +371,7 @@ function updateCampagne() {
                             <tr
                                 class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
                                     Magic Mouse 2
                                 </th>
 
@@ -283,7 +383,7 @@ function updateCampagne() {
                             <tr
                                 class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
                                     Google Pixel Phone
                                 </th>
 
@@ -294,7 +394,7 @@ function updateCampagne() {
                             </tr>
                             <tr>
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
                                     Apple Watch 5
                                 </th>
 
@@ -312,16 +412,15 @@ function updateCampagne() {
 
         <!-- Formulaire pour la création d'une campagne -->
         <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
-            v-if="ajoutCampagne">
+            v-if="showAddCampaignModal">
             <div
                 class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary 
                 placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
-                <span @click="closeModal()" class="absolute top-5 right-5 cursor-pointer">
+                <span @click="closeCreateCampagneModal()" class="absolute top-5 right-5 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path fill-rule="evenodd"
-                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
-                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.
-                            06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
+                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 
+                            1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
                             clip-rule="evenodd" />
                     </svg>
 
@@ -334,8 +433,8 @@ function updateCampagne() {
                                 Nom campagne:
                             </label>
                             <input
-                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 text-primary 
-                                placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
+                                text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
                                 type="text" id="campagne" v-model="nom_campagne" />
                         </div>
                         <div>
@@ -351,50 +450,132 @@ function updateCampagne() {
             </div>
         </div>
 
+        <!-- Formulaire pour l'édition d'une campagne existante -->
+        <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
+            v-if="showModifCampaignModal">
+            <div
+                class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary 
+                placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
+                <span @click="closeModifCampagneModal()" class="absolute top-5 right-5 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
+                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 
+                            1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                            clip-rule="evenodd" />
+                    </svg>
 
-    </div>
+                </span>
 
-    <!-- <form action="" class=" px-20">
-        <div class="space-y-12">
-            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div>
-                    <label for="campagne"> Nom campagne</label>
-                    <div>
-                        <input type="text" id="campagne" name="campagne"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                <form @submit.prevent="">
+                    <div class="m-4 w-full tailleChang">
+                        <div class="flex items-center">
+                            <label class="px-4 flex items-center text-primary text-xl font-bold" for="campagne">
+                                Nom campagne:
+                            </label>
+                            <input
+                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
+                                text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                type="text" id="campagne" v-model="campagneDonnes" />
+                        </div>
+                        <div>
+                        </div>
                     </div>
-                </div>
-                <div class="place-self-center ">
-                    <button type="submit"  class="w-20 h-10 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Créer</button>
-                </div>
-            </div>
-            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div>
-                    <label for="activité"> Nom activité</label>
-                    <div>
-                        <input type="text" id="activité" name="activité"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="place-self-center">
-                    <button type="submit"  class="w-20 h-10 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Créer</button>
-                </div>
-            </div>
-            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div>
-                    <label for="keywords"> Keywords</label>
-                    <div>
-                        <input v-model="keyword" placeholder="Entrez un mot-clé" type="text" id="keywords" name="keywords"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-                <div class="place-self-center">
-                    <button @click="addKeyword" type="button" class="w-20 h-10 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Plus</button>
-                </div>
-                <div class="place-self-center">
-                    <button @click="submitKeywords" type="button"  class="w-20 h-10 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Créer</button>
+                </form>
+                <div class="flex items-center justify-end">
+                    <button class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none 
+                        focus:shadow-outline m-2 mb-8" @click="updateCampagne()">
+                        Modifier
+                    </button>
                 </div>
             </div>
         </div>
-    </form> -->
+
+        <!-- Formulaire pour la création d'une activité -->
+        <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
+            v-if="showAddActivityModal">
+            <div
+                class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary 
+                placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
+                <span @click="closeCreateActivityModal()" class="absolute top-5 right-5 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
+                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 
+                            1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </span>
+                <form @submit.prevent="">
+                    <div class="m-4 w-full tailleChang">
+                        <div class="flex items-center mb-2">
+                            <label for="campagne" class="px-4 flex items-center text-primary text-xl font-bold">
+                                Campagne:
+                            </label>
+                            <select id="campagne"
+                                class="bg-gray-50 w-[70%] text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 
+                                block pw-4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-primary dark:text-primary dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="campActivSelecId">
+                                <option selected>Selectionner une Campagne</option>
+                                <option v-for="camp in campagnes" :key="camp.id" :value="camp.id">{{ camp.nom_campagne }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                            <label class="px-4 flex items-center text-primary text-xl font-bold" for="activité">
+                                Nom activité:
+                            </label>
+                            <input
+                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
+                                text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                type="text" id="activité" v-model="nom_activite" />
+                        </div>
+                    </div>
+
+                </form>
+                <div class="flex items-center justify-end">
+                    <button class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none 
+                        focus:shadow-outline m-2 mb-8" @click="creerActivite()">
+                        Créer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire pour l'édition d'une activité existante -->
+        <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
+            v-if="showModifActivityModal">
+            <div
+                class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary 
+                placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
+                <span @click="closeUpdateActivityModal()" class="absolute top-5 right-5 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
+                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 
+                            1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </span>
+
+                <form @submit.prevent="">
+                    <div class="m-4 w-full tailleChang">
+                        <div class="flex items-center">
+                            <label class="px-4 flex items-center text-primary text-xl font-bold" for="activite">
+                                Nom activité:
+                            </label>
+                            <input
+                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
+                                text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                type="text" id="activite" v-model="activityDonnes" />
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </form>
+                <div class="flex items-center justify-end">
+                    <button class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none 
+                        focus:shadow-outline m-2 mb-8" @click="updateActivity()">
+                        Modifier
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
