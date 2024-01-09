@@ -62,6 +62,33 @@ function creerCampagne() {
 }
 
 
+
+function updateCampagne() {
+
+    let newCampagne = {
+    id: "1",
+    nom_campagne: "BOULANGE"
+    }
+
+    axios.put('http://127.0.0.1:8000/api/update-campaign', newCampagne, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost:8080',  // Origine de votre frontend
+            // Vous pouvez inclure d'autres en-têtes si nécessaire
+        }
+    })
+    .then(response => {
+        // Gérer la réponse du serveur ici
+        console.log(response.data);
+    })
+    .catch(error => {
+        // Gérer les erreurs ici
+        console.error(error);
+    });
+}
+
+
+
 </script>
 
 <template>
@@ -95,7 +122,7 @@ function creerCampagne() {
                             </th>
 
                             <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" @click="updateCampagne()">Edit</a>
                             </td>
                         </tr>
 
