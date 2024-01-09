@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import axios from 'axios';
 // import {  defineProps } from "vue";
 
 // let props = defineProps({
@@ -26,7 +27,7 @@ import { ref } from "vue";
 // })
 let campagnes = [];
 let ajoutCampagne = ref(false);
-let campagne = ref("");
+
 // let activité = ref("");
 
 function createCampagne() {
@@ -37,10 +38,27 @@ function closeModal() {
     this.ajoutCampagne = !this.ajoutCampagne
 }
 
+let nom_campagne = ref('');
 function creerCampagne() {
-    this.ajoutCampagne = !this.ajoutCampagne
-    console.log(campagne);
-    campagnes.push(campagne);
+    console.log(nom_campagne.value);
+
+    axios.post('http://127.0.0.1:8000/api/store-campaign', {
+        nom_campagne: nom_campagne.value
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost:8080',  // L'origine de votre frontend
+            // Vous pouvez également inclure d'autres en-têtes si nécessaire
+        }
+    })
+    .then(response => {
+        // Gérer la réponse du serveur ici
+        console.log(response.data);
+    })
+    .catch(error => {
+        // Gérer les erreurs ici
+        console.error(error);
+    });
 }
 
 
@@ -284,7 +302,7 @@ function creerCampagne() {
                             </label>
                             <input
                                 class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
-                                type="text" id="campagne" v-model="campagne" />
+                                type="text" id="campagne" v-model="nom_campagne" />
                         </div>
                         <div>
                         </div>
