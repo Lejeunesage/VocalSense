@@ -69,7 +69,8 @@ function creerCampagne() {
     <div class="grid grid-cols-3 gap-10">
         <div class="bg-gray relative  bg-opacity-25 h-96 overflow-y-auto rounded-xl flex-row">
             <button type="button" @click="createCampagne()"
-                class=" fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
+                class=" fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
+                font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
                 Créer une campagne
             </button>
             <div class="flex flex-col px-2 mt-14">
@@ -105,7 +106,8 @@ function creerCampagne() {
         </div>
         <div class="bg-gray relative  bg-opacity-25 h-96 overflow-y-auto rounded-xl flex-row">
             <button type="button"
-                class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
+                class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
+                font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
                 Créer une activité
             </button>
             <div class="flex flex-col px-2 mt-14">
@@ -194,7 +196,8 @@ function creerCampagne() {
         </div>
         <div class="bg-gray relative  bg-opacity-25  overflow-y-auto rounded-xl flex-row">
             <button type="button"
-                class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
+                class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
+                font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
                 Créer mots clé
             </button>
             <div class="flex flex-col px-2 mt-14">
@@ -284,11 +287,14 @@ function creerCampagne() {
         <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
             v-if="ajoutCampagne">
             <div
-                class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
+                class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary 
+                placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
                 <span @click="closeModal()" class="absolute top-5 right-5 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path fill-rule="evenodd"
-                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
+                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.
+                            06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
                             clip-rule="evenodd" />
                     </svg>
 
@@ -301,7 +307,8 @@ function creerCampagne() {
                                 Nom campagne:
                             </label>
                             <input
-                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 text-primary 
+                                placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
                                 type="text" id="campagne" v-model="nom_campagne" />
                         </div>
                         <div>
@@ -362,4 +369,5 @@ function creerCampagne() {
                 </div>
             </div>
         </div>
-    </form> --></template>
+    </form> -->
+</template>
