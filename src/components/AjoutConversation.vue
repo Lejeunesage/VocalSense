@@ -120,7 +120,7 @@ const saveConversation = async () => {
 
                     <div class="h-[500px] border p-5 overflow-y-scroll">
                         <div v-for="(message, index) in jsonData.messages" :key="index"
-                            :class="{ 'flex items-start': message.expediteur === 'Client', ' flex items-end': message.expediteur === 'Teleconseiller' }">
+                            :class="{ 'flex items-start': message.expediteur === 'Client', ' flex justify-end': message.expediteur === 'Teleconseiller' }">
 
                             <div
                                 :class="{ 'text-left bg-gray rounded-xl my-2 p-4 max-x-96': message.expediteur === 'Client', ' bg-primary text-white rounded-xl my-2 p-4 max-w-96': message.expediteur === 'Teleconseiller' }">
@@ -129,6 +129,8 @@ const saveConversation = async () => {
                             </div>
                         </div>
                     </div>
+
+
 
 
 
