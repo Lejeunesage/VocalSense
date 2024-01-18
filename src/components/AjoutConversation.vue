@@ -123,8 +123,8 @@ const saveConversation = async () => {
                             :class="{ 'flex items-start': message.expediteur === 'Client', ' flex justify-end': message.expediteur === 'Teleconseiller' }">
 
                             <div
-                                :class="{ 'text-left bg-gray rounded-xl my-2 p-4 max-x-96': message.expediteur === 'Client', ' bg-primary text-white rounded-xl my-2 p-4 max-w-96': message.expediteur === 'Teleconseiller' }">
-                                <p class="max-x-96">{{ message.contenu }}</p>
+                                :class="{ 'text-left bg-gray rounded-xl my-2 p-4 ': message.expediteur === 'Client', ' bg-primary text-white rounded-xl my-2 p-4 ': message.expediteur === 'Teleconseiller' }">
+                                <p class="">{{ message.contenu }}</p>
                                 <small>{{ message.heure_message }}</small>
                             </div>
                         </div>

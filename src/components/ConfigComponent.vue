@@ -6,10 +6,9 @@ import ViewLayout from "../Layouts/ViewLayout.vue";
 onMounted(() => {
     getCampagneList(),
         getActivityList(),
-        motsCles.value
-
+        getMotsclesList()
 })
-
+// ================================== Campagne =========================
 // Variable permettant d'afficher le modal de creation de campagne
 let showAddCampaignModal = ref(false);
 
@@ -27,17 +26,15 @@ function showModifCampagneModal() {
     showModifCampaignModal.value = true;
 }
 
-
 // Fonction permattant de fermer le modal de création de campagne
 function closeCreateCampagneModal() {
     showAddCampaignModal.value = !showAddCampaignModal.value
 }
 
-// Fonction permattant de fermer le modal de modification d'une campagne
+// Fonction permettant de fermer le modal de modification d'une campagne
 function closeModifCampagneModal() {
     showModifCampaignModal.value = !showModifCampaignModal.value
 }
-
 
 let nom_campagne = ref('');
 const response = ref(null)
@@ -77,8 +74,10 @@ const creerCampagne = async () => {
 
 // Variables récupérant le nom de la campagne
 let campagneDonnes = ref('')
+
 // Variables récupérant l'id de la campagne sélectionné
 let campagneSelectId = ref(null)
+
 // Fonction permettant de récupérer les informations de la campagne a modifié
 const getCampagneById = async (id) => {
     try {
@@ -93,7 +92,6 @@ const getCampagneById = async (id) => {
         console.error(error)
     }
 }
-
 
 // Fonction permettant de mettre a jour une campagne
 const updateCampagne = async () => {
@@ -127,7 +125,7 @@ const deleteCampagne = async (id) => {
 }
 
 
-//   Activité
+//   ========================Activité===========================
 let nom_activite = ref('')
 let activites = ref([]);
 let campagneActivitySelect = ref(null);
@@ -242,10 +240,10 @@ const deleteActivity = async (id) => {
 
 // ==============MOTS CLés=========================
 // Variable pour stocker les mots clés
-let motsCles = ref([]);
-
-// Variable pour stocker temporairement le mot clé en cours
-let motCleTemp = ref('');
+let motCleTemp = ref('')
+let listMotcle = ref([])
+let nom_motcles = ref([])
+let motclesActivitySelect = ref(null);
 
 // Variable permettant d'afficher le modal de création des mots clés
 let showAddMotclesModal = ref(false);
@@ -260,33 +258,56 @@ function closeCreateMotclesModal() {
     showAddMotclesModal.value = !showAddMotclesModal.value
 }
 
-// Fonction permettant d'ajouter le mot clé temporaire à la liste
-// const addKeyword = async () => {
-//     const body = {
+// Fonction permettant de recupérer tous les mots clés disponibles
+const getMotsclesList = async () => {
+    try {
+        response.value = await axios.get('http://localhost:8000/api/keywords-list')
+        console.log(response.value);
+        nom_motcles.value = response.value.data;
+        console.log(nom_motcles.value);
 
-//     }
-// }
-function addKeyword() {
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Fonction permettant d'ajouter le mot clé temporaire à la liste
+function ajoutMotcleTemporaire() {
     if (motCleTemp.value.trim() !== "") {
-        motsCles.value.push(motCleTemp.value);
+        listMotcle.value.push(motCleTemp.value);
         motCleTemp.value = "";
     }
 }
 
-function createKeyword() {
-    console.log("Mtc :", motsCles.value);
-    motsCles.value;
-    closeCreateMotclesModal();
+// Fonction permettant de créer les mots clés
+const creerMotsCles = async () => {
+    const body = {
+        nom_motcles: listMotcle.value,
+        activity_id: motclesActivitySelect.value
+    }
+
+    try {
+        response.value = await axios.post('http://localhost:8000/api/store-keyword', body)
+        console.log(response.value);
+        nom_motcles.value = response.value.data.keyword_list;
+        showAddMotclesModal.value = false;
+        motCleTemp.value = "";
+        motclesActivitySelect.value = null;
+        listMotcle.value = [];
+    } catch (error) {
+        console.error(error)
+    }
 }
+// Fonction permettant d'ajouter le mot clé temporaire à la liste
 
 </script>
 
 <template>
     <ViewLayout>
 
-
         <h1 class="text-center text-2xl font-semibold">Configuration</h1>
         <div class="grid grid-cols-3 gap-10">
+            <!-- Campagne -->
             <div class="bg-gray relative  bg-opacity-25 h-96 overflow-y-auto rounded-xl flex-row">
                 <button type="button" @click="showCreateCampagneModal()" class=" fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
                 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10">
@@ -330,6 +351,8 @@ function createKeyword() {
                 </div>
 
             </div>
+
+            <!-- Activité -->
             <div class="bg-gray relative  bg-opacity-25 h-96 overflow-y-auto rounded-xl flex-row">
                 <button type="button" class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
                 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10" @click="showCreateActivityModal()">
@@ -376,14 +399,14 @@ function createKeyword() {
                 </div>
 
             </div>
+
+            <!-- Mots Clés -->
             <div class="bg-gray relative  bg-opacity-25  overflow-y-auto rounded-xl flex-row">
                 <button type="button" class="fixed text-white bg-primary hover:bg-primary hover:bg-opacity-90 focus:ring-4 focus:ring-blue-300 
                 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-10" @click="showCreateMotclesModal()">
                     Créer mots clé
                 </button>
                 <div class="flex flex-col px-2 mt-14">
-
-
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -399,10 +422,10 @@ function createKeyword() {
                             </thead>
                             <tbody>
                                 <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
-                                    v-for="(motCle, index) in motsCles" :key="index">
+                                    v-for="(motCle, index) in nom_motcles" :key="index">
                                     <th scope="row"
                                         class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-primary">
-                                        {{ motCle }}
+                                        {{ motCle.nom_motcle }}
                                     </th>
 
                                     <td class="px-6 py-4">
@@ -413,7 +436,6 @@ function createKeyword() {
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
 
@@ -601,34 +623,48 @@ function createKeyword() {
                             1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
                                 clip-rule="evenodd" />
                         </svg>
-
                     </span>
-
                     <form @submit.prevent="">
                         <div class="m-4 w-full tailleChang">
+                            <div class="flex items-center mb-2">
+                                <label for="activite" class="px-4 flex items-center text-primary text-xl font-bold">
+                                    Activité:
+                                </label>
+                                <select id="activite"
+                                    class="bg-gray-50 w-[70%] text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 
+                                block pw-4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-primary dark:text-primary dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    v-model="motclesActivitySelect">
+                                    <option selected>Selectionner une activité</option>
+                                    <option v-for="activite in activites" :key="activite.id" :value="activite.id">{{
+                                        activite.nom_activite
+                                    }}
+                                    </option>
+                                </select>
+                            </div>
                             <div class="flex items-center">
-                                <label class="px-4 flex items-center text-primary text-xl font-bold">
+                                <label class="px-4 flex items-center text-primary text-xl font-bold" for="motcle">
                                     Mots clés :
                                 </label>
-                                <input
-                                    class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
-                                text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
-                                    type="text" id="campagne" v-model="motCleTemp" />
-                                <button @click="addKeyword" type="button"
-                                    class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                    Ajouter </button>
+                                <input class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
+              text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                    type="text" id="motcle" v-model="motCleTemp" />
+                                <button @click="ajoutMotcleTemporaire" type="button"
+                                    class="ml-2 bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Ajouter
+                                </button>
                             </div>
                             <div>
                                 <!-- Liste des mots clés -->
                                 <ul>
-                                    <li v-for="(motCle, index) in motsCles" :key="index">{{ motCle }}</li>
+                                    <li v-for="(motCle, index) in listMotcle" :key="index">{{ motCle }}</li>
                                 </ul>
                             </div>
                         </div>
+
                     </form>
                     <div class="flex items-center justify-end">
-                        <button class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none 
-                        focus:shadow-outline m-2 mb-8" @click="createKeyword">
+                        <button @click="creerMotsCles"
+                            class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline m-2 mb-8">
                             Créer
                         </button>
                     </div>
