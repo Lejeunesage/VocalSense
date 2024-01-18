@@ -37,8 +37,6 @@ const handleFileChange = (event) => {
 };
 
 
-
-
 const isModalOpen = ref(false);
 
 const openModal = () => {
@@ -82,6 +80,7 @@ const saveConversation = async () => {
         // Ajoutez ici le traitement des erreurs si nécessaire
     }
 };
+
 // http://localhost:8000/api/store-conversation
 
 </script>
@@ -98,8 +97,6 @@ const saveConversation = async () => {
                         fichier JSON :</label>
                     <input type="file" id="jsonFile" accept=".json" @change="handleFileChange"
                         class="block w-full text-lg text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
-
-
                 </div>
 
                 <div v-if="jsonData" class="mt-10 ">
@@ -107,7 +104,7 @@ const saveConversation = async () => {
                     <div class="grid grid-cols-2 gap-5 mb-10">
 
                         <div>
-                            <p>Téléconseillée : {{ jsonData.nom_teleconseiller }}</p>
+                            <p>Téléconseillé(e) : {{ jsonData.nom_teleconseiller }}</p>
                             <p>Client : {{ jsonData.nom_client }}</p>
                             <p>Tél : {{ jsonData.client_numero_telephone }}</p>
                         </div>
@@ -120,27 +117,46 @@ const saveConversation = async () => {
 
                     <div class="h-[500px] border p-5 overflow-y-scroll">
                         <div v-for="(message, index) in jsonData.messages" :key="index"
-                            :class="{ 'flex items-start': message.expediteur === 'Client', ' flex justify-end': message.expediteur === 'Teleconseiller' }">
+                            :class="{ 'flex flex-row items-center': message.expediteur === 'Client', 'flex items-center justify-start flex-row-reverse': message.expediteur === 'Teleconseiller' }">
+
+
+                            <!-- Affichage des initiales et du nom de l'expéditeur -->
+
+                            <div class="flex items-center mb-2">
+                                <div v-if="message.expediteur === 'Client'"
+                                    class="rounded-full w-8 h-8 bg-gray flex items-center justify-center mr-2">
+                                    <span class="text-white font-bold">AA</span>
+                                </div>
+                                <div v-if="message.expediteur === 'Teleconseiller'"
+                                    class="rounded-full w-8 h-8 bg-primary flex items-center justify-center ml-2">
+                                    <span class="text-white font-bold">AA</span>
+                                </div>
+
+                            </div>
 
                             <div
-                                :class="{ 'text-left bg-gray rounded-xl my-2 p-4 ': message.expediteur === 'Client', ' bg-primary text-white rounded-xl my-2 p-4 ': message.expediteur === 'Teleconseiller' }">
-                                <p class="">{{ message.contenu }}</p>
-                                <small>{{ message.heure_message }}</small>
+                                :class="{ 'text-left bg-gray rounded-xl my-2 p-4': message.expediteur === 'Client', ' bg-primary text-white rounded-xl my-2 p-4 max-w-xs': message.expediteur === 'Teleconseiller' }">
+
+                                <div>
+                                    <span class="font-bold" :class="{ ' bg-red': message.expediteur === 'Client', ' bg-white': message.expediteur === 'Teleconseiller' }">AAA</span>
+                                </div>
+                                <div>
+
+                                    <p class="">{{ message.contenu }}</p>
+                                    <small>{{ message.heure_message }}</small>
+                                </div>
                             </div>
+
                         </div>
                     </div>
-
-
-
-
 
                     <div>
                         <span @click="save"
                             class="mt-5 bg-primary  text-white px-4 py-2 rounded-xl cursor-pointer">Sauvegarder
                             la conversation</span>
                     </div>
-
                 </div>
+
             </div>
 
         </div>
