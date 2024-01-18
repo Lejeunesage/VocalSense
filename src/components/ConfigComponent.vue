@@ -61,7 +61,6 @@ const creerCampagne = async () => {
 
     try {
         response.value = await axios.post('http://localhost:8000/api/store-campaign', body)
-
         console.log(response.value);
         campagnes.value = response.value.data.campaign_list
         showAddCampaignModal.value = false
@@ -126,7 +125,7 @@ const deleteCampagne = async (id) => {
 
 
 //   ========================Activité===========================
-let nom_activite = ref('')
+let nom_activite = ref('');
 let activites = ref([]);
 let campagneActivitySelect = ref(null);
 
@@ -177,6 +176,7 @@ const creerActivite = async () => {
 
 // Variables récupérant le nom de l'activité sélectionné
 let activityDonnes = ref('')
+
 // Variables récupérant l'id de l'activité sélectionné
 let activitySelectId = ref(null)
 
@@ -190,7 +190,7 @@ function showUpdateActivityModal() {
 
 // Fonction permettant de fermer le modal de mise a jour d'une activitée
 function closeUpdateActivityModal() {
-    showModifActivityModal.value = !showAddActivityModal.value
+    showModifActivityModal.value = !showModifActivityModal.value
 }
 
 // Fonction permettant de récupérer les informations de l'activité a modifié
@@ -239,6 +239,8 @@ const deleteActivity = async (id) => {
 }
 
 // ==============MOTS CLés=========================
+
+// =création mot clés=
 // Variable pour stocker les mots clés
 let motCleTemp = ref('')
 let listMotcle = ref([])
@@ -298,7 +300,88 @@ const creerMotsCles = async () => {
         console.error(error)
     }
 }
-// Fonction permettant d'ajouter le mot clé temporaire à la liste
+
+// =édition mot clés=
+// Variable permettant d'afficher le modal de mise a jour d'un mot clé
+let showModifKeyword = ref(false);
+
+// function permettant de montrer le modal d'édition de mot clé
+function showModifKeywordModal() {
+    showModifKeyword.value = true
+}
+
+// function permettant de fermer le modal d'édition de mot clé
+function closeModifKeywordModal() {
+    showModifKeyword.value = !showModifKeyword.value
+}
+
+// Variables récupérant le mot clé sélectionné
+let keywordSelected = ref('')
+
+// Variables récupérant l'id de l'activité sélectionné
+let keywordSelectedId = ref(null)
+
+
+// Fonction permettant de récupérer les informations d'un mot clé à modifier
+const getKeywordById = async (id) => {
+    try {
+        keywordSelectedId = id
+        response.value = await axios.get(`http://localhost:8000/api/${id}/get-keyword`)
+        console.log(response.value);
+        keywordSelected.value = response.value.data.nom_motcle;
+        console.log(keywordSelected.value);
+        console.log(keywordSelectedId);
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Fonction permettant de mettre a jour un mot clé
+const updateKeyword = async () => {
+    const body = {
+        id: keywordSelectedId,
+        nom_motcle: keywordSelected.value
+    }
+
+    try {
+        response.value = await axios.put('http://localhost:8000/api/update-keyword', body)
+        console.log(response.value);
+        showModifKeyword.value = false;
+        keywordSelectedId = null
+        nom_motcles.value = response.value.data.keyword_list;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// Fonction permettant de supprimer un mot clé
+const deleteKeyword = async (id) => {
+    try {
+        window.alert('Êtes-vous sur de vouloir faire cette suppression ?')
+        response.value = await axios.delete(`http://localhost:8000/api/${id}/delete-keyword`);
+        console.log(response);
+        nom_motcles.value = response.value.data.keyword_list
+    } catch (error) {
+        console.error(error)
+    }
+}
+// const updateActivity = async () => {
+//     const body = {
+//         id: activitySelectId,
+//         nom_activite: activityDonnes.value
+//     }
+
+//     try {
+//         response.value = await axios.put('http://localhost:8000/api/update-activity', body)
+//         console.log(response.value);
+//         showModifActivityModal.value = false;
+//         activitySelectId = null
+//         activites.value = response.value.data.activity_list
+//     } catch (error) {
+//         console.error(error)
+//     }
+// }
 
 </script>
 
@@ -429,8 +512,12 @@ const creerMotsCles = async () => {
                                     </th>
 
                                     <td class="px-6 py-4">
-                                        <a href="#"
-                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                            @click="getKeywordById(motCle.id), showModifKeywordModal()">Editer</a>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a href="#" class="font-medium text-red dark:text-red hover:underline"
+                                            @click="deleteKeyword(motCle.id)">Supprimer</a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -609,7 +696,6 @@ const creerMotsCles = async () => {
                 </div>
             </div>
 
-
             <!-- Formulaire pour la création des mots clés -->
             <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
                 v-if="showAddMotclesModal">
@@ -670,6 +756,46 @@ const creerMotsCles = async () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Formulaire pour l'édition d'un mot clé existant -->
+            <div class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray bg-opacity-80"
+                v-if="showModifKeyword">
+                <div
+                    class="bg-gray border relative border-primary md:max-w-3xl m-auto pt-6 shadow-lg text-primary placeholder-primary 
+                placeholder-opacity-50 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pr-8 dark:bg-gray animation">
+                    <span @click="closeModifKeywordModal()" class="absolute top-5 right-5 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 
+                            6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 
+                            1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </span>
+
+                    <form @submit.prevent="">
+                        <div class="m-4 w-full tailleChang">
+                            <div class="flex items-center">
+                                <label class="px-4 flex items-center text-primary text-xl font-bold" for="activite">
+                                    Mot clé :
+                                </label>
+                                <input
+                                    class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none text-sm leading-6 
+                                text-primary placeholder-slate-400 rounded-md pl-6 ring-1 ring-slate-200 shadow-sm w-[70%] py-2"
+                                    type="text" id="motcle" v-model="keywordSelected" />
+                            </div>
+                            <div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="flex items-center justify-end">
+                        <button class="bg-primary hover:bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none 
+                        focus:shadow-outline m-2 mb-8" @click="updateKeyword()">
+                            Modifier
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </ViewLayout>
 </template>
