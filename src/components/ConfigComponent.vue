@@ -366,22 +366,6 @@ const deleteKeyword = async (id) => {
         console.error(error)
     }
 }
-// const updateActivity = async () => {
-//     const body = {
-//         id: activitySelectId,
-//         nom_activite: activityDonnes.value
-//     }
-
-//     try {
-//         response.value = await axios.put('http://localhost:8000/api/update-activity', body)
-//         console.log(response.value);
-//         showModifActivityModal.value = false;
-//         activitySelectId = null
-//         activites.value = response.value.data.activity_list
-//     } catch (error) {
-//         console.error(error)
-//     }
-// }
 
 </script>
 
