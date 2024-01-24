@@ -7,6 +7,6 @@
 </template>
 
 <script setup>
-import ViewLayout from "../Layouts/ViewLayout.vue";
+import ViewLayout from "../layouts/ViewLayout.vue";
 
 </script>

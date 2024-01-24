@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from 'axios';
-import ViewLayout from "../Layouts/ViewLayout.vue";
+import ViewLayout from "../layouts/ViewLayout.vue";
 
 onMounted(() => {
     getCampagneList(),
@@ -81,10 +81,8 @@ const getCampagneById = async (id) => {
     try {
         campagneSelectId = id
         response.value = await axios.get(`http://localhost:8000/api/${id}/get-campaign`)
-        console.log(response.value);
+
         campagneDonnes.value = response.value.data.nom_campagne;
-        console.log(campagneDonnes.value);
-        console.log(campagneSelectId);
 
     } catch (error) {
         console.error(error)
@@ -168,7 +166,7 @@ const creerActivite = async () => {
     }
 
     try {
-        response.value = await axios.post('http://localhost:8000/api/store-activity', body)
+        response.value = await axios.post('', body)
 
         console.log(response.value);
         activites.value = response.value.data.activity_list

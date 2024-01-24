@@ -7,8 +7,7 @@ import { RouterLink } from "vue-router";
 </script>
 
 <template>
-
-    <div class="rounded-md px-5 py-6">
+    <div class="rounded-md ">
         <aside id="cta-button-sidebar"
             class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
             aria-label="Sidebar">
@@ -55,7 +54,8 @@ import { RouterLink } from "vue-router";
                         </RouterLink>
                     </li>
                     <li>
-                        <RouterLink to="/addConversation" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100">
+                        <RouterLink to="/addConversation"
+                            class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                 class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white">
                                 <path fill-rule="evenodd"
@@ -71,9 +71,7 @@ import { RouterLink } from "vue-router";
     </div>
 
 
-    <div class="p-4 sm:ml-64">
-        <div class="p-4">
-            <slot />
-        </div>
+    <div class="sm:ml-64">
+        <slot />
     </div>
 </template>

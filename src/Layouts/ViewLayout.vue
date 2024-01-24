@@ -1,5 +1,6 @@
 <script setup>
-import AsideBarComponentVue from "@/components/AsideBarComponent.vue";
+import AsideBarComponentVue from "../partials/AsideBarComponent.vue";
+
 
 
 </script>

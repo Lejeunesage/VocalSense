@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import ViewLayout from "../Layouts/ViewLayout.vue";
+import ViewLayout from "../layouts/ViewLayout.vue";
 
 
 onMounted(() => {
