@@ -2,8 +2,13 @@
 
 </script>
 <template>
+
+    <div class="beige-font min-h-screen">
+      
+      <router-view />
+    </div>
+ 
   
-    <router-view />
 
 
 </template>
@@ -17,6 +22,26 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+
+  
+}
+
+.beige-font{
+  /* margin-top: 20px;
+  height: 90vh; */
+  /* background-color: rgba(221, 193, 160, 0.2); */
+  background-color: rgb(241 245 249);
   color: #2c3e50;
+}
+
+
+::-webkit-scrollbar {
+  width: 7px; 
+}
+
+::-webkit-scrollbar-thumb {
+  border: solid 0 transparent;
+  background-color:  #123e67;
+  border-radius: 3px; 
 }
 </style>
