@@ -20,7 +20,7 @@
                         <p class="text-lg text-gray-700 mb-8">VocalSence retranscrit et analyse automatiquement 100% de vos
                             conversations - appels, sms, emails, chats - pour vous permettre d’améliorer en continu la
                             conformité du discours, les taux de conversion et la satisfaction client.</p>
-                        <a href="#demander-demo" class="w-56 btn btn-blue">Demander une démo</a>
+                        <a href="#demander-demo" class="w-48 btn btn-blue">Commencer</a>
                        
                     </div>
                     <!-- Image -->
