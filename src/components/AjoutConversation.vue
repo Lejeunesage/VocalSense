@@ -21,20 +21,80 @@ const getActivityList = async () => {
     }
 }
 
-const jsonData = ref(null);
+// const jsonData = ref(null);
+const jsonData = {
+    "nom_teleconseiller": "Martin RIVIERA",
+    "nom_client": "Colombe DUCASH",
+    "nom_superviseur": "SUP_",
+    "client_numero_telephone": "+3300588445536",
+    "qualification_appel": "ACCORD VENTE",
+    "date_conversation": "2024-01-12",
+    "messages": [
+        {
+            "expediteur": "Client",
+            "contenu": "Allô allô ! J'ai un souci avec ma connexion fibre, êtes-vous là ?? C'est très urgent !",
+            "heure_message": "08:00:00"
+        },
+        {
+            "expediteur": "Teleconseiller",
+            "contenu": "Bonjour Mme Durand ! Oui je suis là, ne vous inquiétez pas. Dites-moi ce qui se passe avec votre connexion ?",
+            "heure_message": "08:05:00"
+        },
+        {
+            "expediteur": "Client",
+            "contenu": "Ouf vous êtes là ! Eh bien figurez-vous que plus rien ne fonctionne depuis ce matin : ni internet, ni la télévision ! Au secours, que dois-je faire ??",
+            "heure_message": "08:10:00"
+        },
+        {
+            "expediteur": "Teleconseiller",
+            "contenu": "Calmez-vous Madame, respirez ! On va trouver une solution, pas de panique. Avez-vous vérifié les branchements et le courant de votre box ? Un voyant est-il allumé ?",
+            "heure_message": "08:15:00"
+        },
+        {
+            "expediteur": "Client",
+            "contenu": "Oui oui j'ai tout vérifié, la box est bien allumée mais clignote en orange. J'y comprends rien, snif ! Ça ne m'est jamais arrivé...",
+            "heure_message": "08:20:00"
+        },
+        {
+            "expediteur": "Teleconseiller",
+            "contenu": "Ne vous en faites pas, ce n'est peut-être qu'une panne temporaire. Nous allons lancer un diagnostic complet de votre ligne fibre pour voir d'où ça vient.",
+            "heure_message": "08:25:00"
+        },
+        {
+            "expediteur": "Client",
+            "contenu": "D'accord, j'espère que vous allez trouver ce qui ne va pas ! J'ai vraiment besoin d'internet, je m'ennuie toute seule sinon, hou hou !",
+            "heure_message": "08:30:00"
+        },
+        {
+            "expediteur": "Teleconseiller",
+            "contenu": "Je comprends bien Mme Durand ! Nous faisons le nécessaire pour que votre connexion soit rétablie au plus vite. Pour patienter, écoutez de la musique sur votre téléphone, lisez ou faites des mots croisés ! ;)",
+            "heure_message": "08:35:00"
+        },
+        {
+            "expediteur": "Client",
+            "contenu": "Oui c'est une bonne idée ça ! Vous êtes bien gentil de me tenir compagnie. J'attends vos nouvelles alors ! Bisous 😘",
+            "heure_message": "08:40:00"
+        },
+        {
+            "expediteur": "Teleconseiller",
+            "contenu": "Je vous en prie Mme Durand ! Je reviens vers vous dès que j'ai du nouveau. A bientôt ! 😊",
+            "heure_message": "08:45:00"
+        }
+    ]
+}
 
-const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === 'application/json') {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            jsonData.value = JSON.parse(e.target.result);
-        };
-        reader.readAsText(file);
-    } else {
-        alert('Veuillez sélectionner un fichier JSON valide.');
-    }
-};
+// const handleFileChange = (event) => {
+// const file = event.target.files[0];
+// if (file && file.type === 'application/json') {
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//         jsonData.value = JSON.parse(e.target.result);
+//     };
+//     reader.readAsText(file);
+// } else {
+//     alert('Veuillez sélectionner un fichier JSON valide.');
+// }
+// };
 
 
 const isModalOpen = ref(false);
@@ -88,10 +148,10 @@ const saveConversation = async () => {
     <ViewLayout>
 
 
-        <div class="m-8">
-            <h1>CHAT CONVERSATION</h1>
+        <div class="mx-8">
+            <h1 class="text-2xl font-bold">CHAT CONVERSATION</h1>
 
-            <div id="app" class="mt-5">
+            <div id="app" class="mt-2">
                 <div class="flex flex-col justify-start gap-2">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="large_size">Choisir un
                         fichier JSON :</label>
@@ -99,7 +159,7 @@ const saveConversation = async () => {
                         class="block w-full text-lg text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
                 </div>
 
-                <div v-if="jsonData" class="mt-10 ">
+                <div v-if="jsonData" class="mt-5 ">
                     <h2 class="font-bold text-2xl mb-5">Visualisation du contenu du fichier JSON :</h2>
                     <div class="grid grid-cols-2 gap-5 mb-10">
 
@@ -115,38 +175,57 @@ const saveConversation = async () => {
                         </div>
                     </div>
 
-                    <div class="h-[500px] border p-5 overflow-y-scroll">
+                    <div class="h-[500px] shadow-2xl rounded-xl p-5 overflow-y-scroll container mx-auto xl:px-60 ">
+
                         <div v-for="(message, index) in jsonData.messages" :key="index"
                             :class="{ 'flex flex-row items-center': message.expediteur === 'Client', 'flex items-center justify-start flex-row-reverse': message.expediteur === 'Teleconseiller' }">
 
+                            <!-- :class="{ 'flex flex-row items-center flex-end': message.expediteur === 'Client', 'flex items-center justify-start flex-row-reverse  flex-end': message.expediteur === 'Teleconseiller' }" -->
+                            <div :class="{ 'flex flex-row flex-end': message.expediteur === 'Client', 'flex justify-start flex-row-reverse  flex-end': message.expediteur === 'Teleconseiller' }" 
+                               >
+                                <!-- Affichage des initiales et du nom de l'expéditeur -->
 
-                            <!-- Affichage des initiales et du nom de l'expéditeur -->
 
-                            <div class="flex items-center mb-2">
-                                <div v-if="message.expediteur === 'Client'"
-                                    class="rounded-full w-8 h-8 bg-gray flex items-center justify-center mr-2">
-                                    <span class="text-white font-bold">AA</span>
+
+                                <div class="font-bold text-sm flex flex-end"
+                                    :class="{ 'rounded-full w-8 h-8 bg-gray flex items-center justify-center mr-2': message.expediteur === 'Client', 'rounded-full w-8 h-8 bg-primary flex items-center justify-center ml-2': message.expediteur === 'Teleconseiller' }">
+                                    <span class="text-white font-bold">{{
+                message.expediteur === 'Client'
+                ? (
+                    jsonData.nom_client
+                        ? (jsonData.nom_client.substring(0, 1) + (jsonData.nom_client.split(' ')[1] ? jsonData.nom_client.split(' ')[1].substring(0, 1) : ''))
+                        : ''
+                )
+                : (
+                    jsonData.nom_teleconseiller
+                        ? (jsonData.nom_teleconseiller.substring(0, 1) + (jsonData.nom_teleconseiller.split(' ')[1] ? jsonData.nom_teleconseiller.split(' ')[1].substring(0, 1) : ''))
+                        : ''
+                )
+            }}
+</span>
+
                                 </div>
-                                <div v-if="message.expediteur === 'Teleconseiller'"
-                                    class="rounded-full w-8 h-8 bg-primary flex items-center justify-center ml-2">
-                                    <span class="text-white font-bold">AA</span>
+
+
+
+                                <div>
+                                    <div class="font-bold text-[10px]"
+                                        :class="{ 'text-left': message.expediteur === 'Client', 'text-right': message.expediteur === 'Teleconseiller' }">
+                                        <span> {{ message.expediteur === 'Client' ? jsonData.nom_client : jsonData.nom_teleconseiller }}</span>
+
+                                    </div>
+                                    <div
+                                        :class="{ 'text-left bg-gray  my-2 p-4 xl:max-w-[550px] max-w-[400px] rounded-bl-xl rounded-r-xl': message.expediteur === 'Client', ' bg-primary text-white my-2 p-4 xl:max-w-[550px] max-w-[400px] rounded-l-xl rounded-br-xl': message.expediteur === 'Teleconseiller' }">
+
+
+                                        <div>
+                                            <p class="">{{ message.contenu }}</p>
+                                            <small class="text-[10px]">{{ message.heure_message }}</small>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
-
-                            <div
-                                :class="{ 'text-left bg-gray rounded-xl my-2 p-4': message.expediteur === 'Client', ' bg-primary text-white rounded-xl my-2 p-4 max-w-xs': message.expediteur === 'Teleconseiller' }">
-
-                                <div>
-                                    <span class="font-bold" :class="{ ' bg-red': message.expediteur === 'Client', ' bg-white': message.expediteur === 'Teleconseiller' }">AAA</span>
-                                </div>
-                                <div>
-
-                                    <p class="">{{ message.contenu }}</p>
-                                    <small>{{ message.heure_message }}</small>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
 

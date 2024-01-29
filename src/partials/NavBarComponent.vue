@@ -14,7 +14,7 @@ import LogoComponent from "@/components/LogoComponent.vue"
             <ul class="py-2 flex">
                
                 <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ">Paramêtre</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:underline">Bibliothèque</a>
                 </li>
                 <li>
                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ">Déconnexion</a>
